@@ -25,7 +25,8 @@ router.post('/register_user', (req,res)=>{
             bcrypt.hash(password, salt, function (err, hash) {
 
               //TOKEN-
-              const token = jwt.sign({ email }, process.env.SECRET, { expiresIn: 300 });
+              //const token = jwt.sign({ email }, process.env.SECRET, { expiresIn: 300 });
+              const token = jwt.sign({email}, process.env.SECRET, { expiresIn: '10m' });  
 
               const sql = `INSERT INTO user (first_name, email, password) VALUES ("${first_name}", "${email}", "${hash}")`;
 
@@ -33,7 +34,6 @@ router.post('/register_user', (req,res)=>{
                 database.query(sql, function (err, result) {
                   if (result) {
                     sendEmail.send_email_nodemailer(email)
-                    console.log(result)
                     res.send(result)
                   }
                 })
@@ -61,9 +61,20 @@ router.post('/register_user', (req,res)=>{
 });
 
 
+router.get('/verify/:token', (req, res)=>{ 
+  const {token} = req.params; 
+  console.log(token)
 
-router.put('/update_verification', (req,res)=>{
-    
-})
+  // Verifying the JWT token  
+  jwt.verify(token, process.env.SECRET, function(err, decoded) { 
+      if (err) { 
+          console.log(err); 
+          res.send("Verificação do Email falhou, possivelmente o link inválido ou expirado"); 
+      } 
+      else { 
+          res.send("Email verificado com sucesso!"); 
+      } 
+  }); 
+}); 
 
 module.exports = router
