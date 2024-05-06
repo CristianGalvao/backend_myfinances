@@ -1,12 +1,12 @@
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
-dotenv.config({path: '../.env'});
+dotenv.config({path: './.env'});
 
-async function send_email_nodemailer(email){
+async function send_email_nodemailer(email,token){
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: process.env.USER,
+          user: process.env.USER_EMAIL,
           pass: process.env.PASS
         }
       });
@@ -195,7 +195,7 @@ async function send_email_nodemailer(email){
                             <table border="0" cellpadding="0" cellspacing="0">
                               <tr>
                                 <td align="center" bgcolor="#1a82e2" style="border-radius: 6px;">
-                                  <a href="${process.env.BASE_URL}/verify_user/${email}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Confirmar E-mail</a>
+                                  <a href="http://localhost:3000/verify/${email}/${token}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff; text-decoration: none; border-radius: 6px;">Confirmar E-mail</a>
                                 </td>
                               </tr>
                             </table>

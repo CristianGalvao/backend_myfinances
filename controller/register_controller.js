@@ -33,7 +33,7 @@ router.post('/register_user', (req,res)=>{
               try {
                 database.query(sql, function (err, result) {
                   if (result) {
-                    sendEmail.send_email_nodemailer(email)
+                    sendEmail.send_email_nodemailer(email, token)
                     res.send(result)
                   }
                 })
@@ -61,8 +61,9 @@ router.post('/register_user', (req,res)=>{
 });
 
 
-router.get('/verify/:token', (req, res)=>{ 
+router.get('/verify/:email/:token', (req, res)=>{ 
   const {token} = req.params; 
+  const {email} = req.params;
   console.log(token)
 
   // Verifying the JWT token  
@@ -72,7 +73,27 @@ router.get('/verify/:token', (req, res)=>{
           res.send("Verificação do Email falhou, possivelmente o link inválido ou expirado"); 
       } 
       else { 
-          res.send("Email verificado com sucesso!"); 
+          const sql_update_verification = `UPDATE user SET verified = 1 WHERE email = '${email}'`
+
+          update_verified_token = async function(){
+            return new Promise(function(resolve, reject){
+              database.query(sql_update_verification, async function (err, rows) {
+                if (rows === undefined || rows == null || rows == ''){
+                  console.log(err)
+                }else{
+                  res.send("Email verificado com sucesso!");
+                }
+              })
+            })
+          }
+
+          update_verified_token()
+          .then(function (results) {
+            res.send("Email verificado com sucesso!");
+          })
+          .catch(function (err) {
+            console.log(err)
+          }); 
       } 
   }); 
 }); 
